@@ -29,6 +29,7 @@ namespace Playback
         private WaveOutEvent output;
         DispatcherTimer timer;
         bool dragging = false;
+        private VolumeWaveProvider16 volumeProvider;
 
         public MainWindow()
         {
@@ -100,8 +101,14 @@ namespace Playback
                     output.DesiredLatency = 150;
                     output.Volume = (float)sldVolumen.Value;
 
+                    volumeProvider =
+                           new VolumeWaveProvider16(reader);
 
-                    output.Init(reader);
+                    volumeProvider.Volume =
+                           (float)sldVolumen.Value;
+
+                    //////////////////INIIIT////////////////
+                    output.Init(volumeProvider);
                     output.Play();
 
                     btnStop.IsEnabled = true;
@@ -185,9 +192,15 @@ namespace Playback
 
         private void sldVolumen_DragCompleted(object sender, RoutedEventArgs e)
         {
-            if (output != null)
+            
+        }
+
+        private void sldVolumen_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if(volumeProvider != null)
             {
-                output.Volume = (float)sldVolumen.Value;
+                volumeProvider.Volume =
+                    (float)sldVolumen.Value;
             }
         }
     }
